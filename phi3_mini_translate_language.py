@@ -7,7 +7,7 @@
 # supported by a Pinecone semantic vector database.                            #
 #                                                                              #
 # Change History                                                               #
-# 06/25/2024  Esteban Herrera Original code.                                   #
+# 07/14/2024  Esteban Herrera Original code.                                   #
 #                           Add new history entries as needed.                 #
 #                                                                              #
 #                                                                              #
@@ -32,23 +32,32 @@
 #  along with this program; if not, write to the Free Software                 #
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA   #
 
-# create_and_configure_a_new_pinecone_index.py
-# Creates and configures a new Pinecone index named 'new-pinecone-index'
+# phi3_mini_translate_language.py
+# Translates text from one language to another using the Ollama API with a
+# specific model ('commbase-phi3-mini').
 
 # Imports
-from pinecone import Pinecone, ServerlessSpec
+import ollama
 
-# Initialize the Pinecone client with your API key
-pc = Pinecone(api_key="")
 
-# Create Pinecone index
-pc.create_index(
-    name='new-pinecone-index',
-    dimension=384,  # dimensionality of minilm
-    metric='dotproduct',
-    spec=ServerlessSpec(cloud='aws', region='us-east-1')
-)
+def generate_translation(text_to_translate, from_language, to_language):
+    """
+    Generate translated response using the provided text and languages.
 
-# Connect to index and print the index statistics
-index = pc.Index("new-pinecone-index")
-print(index.describe_index_stats())
+    Constructs a prompt for translation and retrieves the response from the
+    Ollama API using the 'commbase-phi3-mini' model.
+
+    Args:
+        text_to_translate (str): Text to be translated.
+        from_language (str): Source language code.
+        to_language (str): Target language code.
+
+    Returns:
+        str: Translated text response.
+    """
+    # Generate the response using the provided text and languages
+    order = f"Translate this from {from_language} to {to_language} (but do not include any explanation): "
+    response = ollama.generate(model='commbase-phi3-mini', prompt=order + text_to_translate)
+
+    # Extract the text response
+    return response['response']
